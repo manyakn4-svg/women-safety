@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SafeGuard - Women Safety App</title>
+  <style>
+    /* CSS Variables */
+    :root {
+      --primary: #e91e8c;
+      --danger: #f44336;
+      --warning: #ff9800;
+      --safe: #4caf50;
+      --bg: #0d0d0d;
+      --surface: #1a1a1a;
+      --surface2: #242424;
+      --text: #f0f0f0;
+      --text-muted: #888;
+      --border: #333;
+    }
+
+    /* Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Base */
+    html, body {
+      height: 100%;
+      font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    /* App wrapper */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Tab bar */
+    #tab-bar {
+      display: flex;
+      overflow-x: auto;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      scrollbar-width: none;
+    }
+
+    #tab-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    #tab-bar button {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      min-width: 64px;
+      padding: 8px 10px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      cursor: pointer;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+      min-height: 56px;
+    }
+
+    #tab-bar button .tab-icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    #tab-bar button:hover {
+      color: var(--text);
+      background: var(--surface2);
+    }
+
+    #tab-bar button.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* Main content */
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    /* Panels */
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .panel h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    /* Status bar */
+    #status-bar {
+      display: flex;
+      gap: 16px;
+      padding: 6px 16px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    /* Form group */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Input field */
+    .input-field {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 15px;
+      padding: 10px 12px;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-field:focus {
+      border-color: var(--primary);
+    }
+
+    /* Button variants */
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 44px;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.85;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 44px;
+      transition: opacity 0.2s;
+    }
+
+    .btn-danger:hover {
+      opacity: 0.85;
+    }
+
+    /* Contact card */
+    .contact-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .contact-card .contact-info .contact-name {
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .contact-card .contact-info .contact-phone {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .contact-card .contact-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Small action buttons */
+    .btn-call, .btn-sms, .btn-edit, .btn-delete {
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      min-height: 44px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-call {
+      background: var(--safe);
+      color: #fff;
+    }
+
+    .btn-sms {
+      background: #2196f3;
+      color: #fff;
+    }
+
+    .btn-edit {
+      background: var(--warning);
+      color: #000;
+    }
+
+    .btn-delete {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-call:hover, .btn-sms:hover, .btn-edit:hover, .btn-delete:hover {
+      opacity: 0.85;
+    }
+
+    /* Shadow Tracker */
+    #coords {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--primary);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      letter-spacing: 0.02em;
+    }
+
+    .location-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .location-card .loc-time {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .map-link {
+      display: inline-block;
+      background: #2196f3;
+      color: #fff;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-bottom: 12px;
+      min-height: 44px;
+      line-height: 28px;
+    }
+
+    .map-link:hover {
+      opacity: 0.85;
+    }
+
+    #geo-error {
+      color: var(--danger);
+      background: rgba(244, 67, 54, 0.1);
+      border: 1px solid var(--danger);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    #route-history h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <nav id="tab-bar">
+      <button data-tab="panic">
+        <span class="tab-icon">🚨</span>
+        <span>Panic</span>
+      </button>
+      <button data-tab="tracker">
+        <span class="tab-icon">📍</span>
+        <span>Tracker</span>
+      </button>
+      <button data-tab="echo">
+        <span class="tab-icon">🎙️</span>
+        <span>Echo</span>
+      </button>
+      <button data-tab="vision">
+        <span class="tab-icon">📸</span>
+        <span>Vision</span>
+      </button>
+      <button data-tab="threat">
+        <span class="tab-icon">🧠</span>
+        <span>Threat</span>
+      </button>
+      <button data-tab="siren">
+        <span class="tab-icon">🔊</span>
+        <span>Siren</span>
+      </button>
+      <button data-tab="guardian">
+        <span class="tab-icon">👥</span>
+        <span>Guardian</span>
+      </button>
+      <button data-tab="safepath">
+        <span class="tab-icon">🗺️</span>
+        <span>SafePath</span>
+      </button>
+      <button data-tab="beacon">
+        <span class="tab-icon">📶</span>
+        <span>Beacon</span>
+      </button>
+      <button data-tab="stealth">
+        <span class="tab-icon">🔐</span>
+        <span>Stealth</span>
+      </button>
+      <button data-tab="vault">
+        <span class="tab-icon">📊</span>
+        <span>Vault</span>
+      </button>
+      <button data-tab="community">
+        <span class="tab-icon">🤝</span>
+        <span>Community</span>
+      </button>
+    </nav>
+
+    <main>
+      <section class="panel" id="panel-panic">
+        <h2>🚨 Panic Pulse</h2>
+      </section>
+      <section class="panel" id="panel-tracker">
+        <h2>📍 Shadow Tracker</h2>
+      </section>
+      <section class="panel" id="panel-echo">
+        <h2>🎙️ Echo Guard</h2>
+      </section>
+      <section class="panel" id="panel-vision">
+        <h2>📸 Vision Shield</h2>
+      </section>
+      <section class="panel" id="panel-threat">
+        <h2>🧠 AI Threat Sense</h2>
+      </section>
+      <section class="panel" id="panel-siren">
+        <h2>🔊 Siren Mode</h2>
+      </section>
+      <section class="panel" id="panel-guardian">
+        <h2>👥 Guardian Circle</h2>
+        <form id="form-add-contact">
+          <div class="form-group">
+            <label for="contact-name">Name</label>
+            <input id="contact-name" class="input-field" type="text" placeholder="Contact name" required />
+          </div>
+          <div class="form-group">
+            <label for="contact-phone">Phone</label>
+            <input id="contact-phone" class="input-field" type="tel" placeholder="+1234567890" required />
+          </div>
+          <button type="submit" class="btn-primary">Add Contact</button>
+        </form>
+        <div id="contact-list" style="margin-top:16px;"></div>
+      </section>
+      <section class="panel" id="panel-safepath">
+        <h2>🗺️ Safe Path Navigator</h2>
+      </section>
+      <section class="panel" id="panel-beacon">
+        <h2>📶 Offline SOS Beacon</h2>
+      </section>
+      <section class="panel" id="panel-stealth">
+        <h2>🔐 Stealth Mode</h2>
+      </section>
+      <section class="panel" id="panel-vault">
+        <h2>📊 Incident Vault</h2>
+      </section>
+      <section class="panel" id="panel-community">
+        <h2>🤝 Community Shield</h2>
+      </section>
+    </main>
+
+    <footer id="status-bar">
+      <span id="status-online">🟢 Online</span>
+      <span id="status-location">📍 Location: --</span>
+    </footer>
+  </div>
+
+  <script>
+    // Global application state
+    const AppState = {
+      contacts: [],
+      incidents: [],
+      photos: [],
+      unsafeZones: [],
+      settings: {
+        secretCode: '1234',
+        fakeCallerName: 'Mom',
+        fakeCallerNumber: '+1234567890',
+        fakeCallDelay: 0
+      },
+      currentLocation: null
+    };
+
+    // Persist state to localStorage
+    function saveState() {
+      try {
+        localStorage.setItem('safeguard_state', JSON.stringify(AppState));
+      } catch (e) {
+        console.warn('saveState failed:', e);
+      }
+    }
+
+    // Load state from localStorage and merge into AppState
+    function loadState() {
+      try {
+        const raw = localStorage.getItem('safeguard_state');
+        if (!raw) return;
+        const saved = JSON.parse(raw);
+        if (Array.isArray(saved.contacts)) AppState.contacts = saved.contacts;
+        if (Array.isArray(saved.incidents)) AppState.incidents = saved.incidents;
+        if (Array.isArray(saved.photos)) AppState.photos = saved.photos;
+        if (Array.isArray(saved.unsafeZones)) AppState.unsafeZones = saved.unsafeZones;
+        if (saved.settings && typeof saved.settings === 'object') {
+          Object.assign(AppState.settings, saved.settings);
+        }
+        if (saved.currentLocation) AppState.currentLocation = saved.currentLocation;
+      } catch (e) {
+        console.warn('loadState failed:', e);
+      }
+    }
+
+    // Show the panel for tabId, hide all others, mark active tab button
+    function switchTab(tabId) {
+      // Hide all panels
+      document.querySelectorAll('.panel').forEach(panel => {
+        panel.classList.remove('active');
+      });
+
+      // Show target panel
+      const target = document.getElementById('panel-' + tabId);
+      if (target) target.classList.add('active');
+
+      // Update tab button active state
+      document.querySelectorAll('#tab-bar button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabId);
+      });
+    }
+
+    // Wire tab button clicks
+    document.querySelectorAll('#tab-bar button').forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+
+    // Init on DOM ready
+    document.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      renderContacts();
+      switchTab('panic');
+    });
+
+    // ── Guardian Circle ──────────────────────────────────────────────
+
+    function addContact(name, phone) {
+      if (AppState.contacts.length >= 5) {
+        alert('You can only add up to 5 guardian contacts.');
+        return;
+      }
+      AppState.contacts.push({ id: Date.now(), name, phone });
+      saveState();
+      renderContacts();
+    }
+
+    function renderContacts() {
+      const list = document.getElementById('contact-list');
+      if (!list) return;
+      list.innerHTML = '';
+      AppState.contacts.forEach(contact => {
+        const card = document.createElement('div');
+        card.className = 'contact-card';
+        card.innerHTML = `
+          <div class="contact-info">
+            <div class="contact-name">${escapeHtml(contact.name)}</div>
+            <div class="contact-phone">${escapeHtml(contact.phone)}</div>
+          </div>
+          <div class="contact-actions">
+            <a class="btn-call" href="tel:${encodeURIComponent(contact.phone)}">📞 Call</a>
+            <a class="btn-sms" href="sms:${encodeURIComponent(contact.phone)}">💬 SMS</a>
+            <button class="btn-edit" onclick="editContact(${contact.id})">✏️ Edit</button>
+            <button class="btn-delete" onclick="deleteContact(${contact.id})">🗑️ Delete</button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    function deleteContact(id) {
+      AppState.contacts = AppState.contacts.filter(c => c.id !== id);
+      saveState();
+      renderContacts();
+    }
+
+    function editContact(id) {
+      const contact = AppState.contacts.find(c => c.id === id);
+      if (!contact) return;
+      const newName = prompt('Edit name:', contact.name);
+      if (newName === null) return;
+      const newPhone = prompt('Edit phone:', contact.phone);
+      if (newPhone === null) return;
+      contact.name = newName.trim() || contact.name;
+      contact.phone = newPhone.trim() || contact.phone;
+      saveState();
+      renderContacts();
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Wire "Add Contact" form
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('form-add-contact');
+      if (form) {
+        form.addEventListener('submit', e => {
+          e.preventDefault();
+          const name = document.getElementById('contact-name').value.trim();
+          const phone = document.getElementById('contact-phone').value.trim();
+          if (name && phone) {
+            addContact(name, phone);
+            form.reset();
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
